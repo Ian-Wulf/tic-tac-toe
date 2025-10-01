@@ -6,28 +6,29 @@ const gameBoard = (function () {
             ["","",""]
         ];
 
-    
-
-    // Clear board by emptying all squares of markers
-    const clear = function() {
-        board.map(row => {
-            return row.map(square => "");
-        });
-    };
+    const getBoard = () => board;
 
     // Place marker
     const placeMarker = (row, col, marker) => (board[row][col] === "") ? board[row][col] = marker : board[row][col] = board[row][col];
 
-    // Applicable functionalities to "export" from module
-    return {clear, placeMarker};
+    // Clear board by emptying all squares of markers
+    const clear = function() {
+        board.forEach(row => row.fill(""));
+    };
+    // 
+    const printBoard = () => console.log(board);
+
+    // Export 
+    return {getBoard, placeMarker, clear, printBoard};
 })();
 
 // Player
-function player(name, marker) {
-    return {name, marker};
+function Player(name, marker, active) {
+    return {name, marker, active};
 }
 
 // Game
 function GameController() {
 
 }
+
