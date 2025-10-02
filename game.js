@@ -55,6 +55,21 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
         console.log(`${getActivePlayer().name}'s turn.`);
     }; 
 
+
+    const checkDirection = (flatBoard, index, offset) => {
+        let playerMarker = flatBoard[index];
+
+        while(flatBoard[index += offset] === playerMarker && index < board.length) {
+
+        }
+    };
+
+    const checkWin = () => {
+        const flatBoard = board.flat();
+
+
+    };
+
     const playRound = (row, col) => {
         console.log(`${getActivePlayer().name} chose square at [${row}, ${col}]`);
 
