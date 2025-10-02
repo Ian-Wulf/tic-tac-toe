@@ -12,6 +12,8 @@ function Gameboard() {
             board[i][j] = "";
         }
     }
+
+    const getBoard = () => board;
     // Check if space is valid
     const validSpace = (row, col) => (board[row][col] === "") ? true : false;
 
@@ -27,7 +29,7 @@ function Gameboard() {
     const printBoard = () => console.log(board);
 
     // Export 
-    return {validSpace, placeMarker, clear, printBoard};
+    return {getBoard, validSpace, placeMarker, clear, printBoard};
 }
 
 // Game
@@ -58,17 +60,61 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
 
     const checkDirection = (flatBoard, index, offset) => {
         let playerMarker = flatBoard[index];
+        let cellsToCheck = board.getBoard().length;
+        let cellsChecked = 1;
 
-        while(flatBoard[index += offset] === playerMarker && index < board.length) {
-
+        if(playerMarker === "") {
+            return false;
         }
+
+        while(flatBoard[index += offset] === playerMarker) {
+            cellsChecked++;
+
+            if(cellsChecked >= cellsToCheck) {
+                return true; // Win found
+            }
+        }
+
+        return false; // No win found
+
     };
 
     const checkWin = () => {
-        const flatBoard = board.flat();
+        const flatBoard = board.getBoard().flat();
 
+        // Checking rows & columns
+        for(let i = 0; i < board.getBoard().length; i++) {
+            // Rows
+            if(checkDirection(flatBoard, i * board.getBoard().length, 1)) {
+                return true;
+            }
+            // Columns
+            if(checkDirection(flatBoard, i, 3)) {
+                return true;
+            }
+        }
+
+        // Checking diagonals
+        if(checkDirection(flatBoard, 0, 4)) {
+            return true;
+        }
+
+        if(checkDirection(flatBoard, board.getBoard().length - 1, 2)) {
+            return true;
+        }
+
+        return false; // No win found in any direction
 
     };
+
+    const availableSquares = () => {
+        let available = board.getBoard().flat().filter(square => square === "");
+        if(available.length > 0) {
+            return true;
+        }
+
+        return false;
+    }
 
     const playRound = (row, col) => {
         console.log(`${getActivePlayer().name} chose square at [${row}, ${col}]`);
@@ -82,11 +128,27 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
 
         // Logic for detecting game win and declaring winner
         // + concluding and resetting game
+        if(checkWin()) {
+            // Declare winner and reset game
+            console.log(`${getActivePlayer().name} wins!
+                         Starting new game...`);
+            board.clear();
+            return;
+        }
+
+        // Checked for winner and board is full; thus tie
+        if(!availableSquares()) {
+            // Declare tie and reset game
+            console.log(`It's a tie!
+                         Starting new game...`);
+            board.clear();
+            return;
+        }
 
         switchTurn();
         printRound();
     }
 
-    return {getActivePlayer, playRound};
+    return {getActivePlayer, playRound, board};
 }
 
