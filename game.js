@@ -32,11 +32,10 @@ const gameboard = (function() {
     return {getBoard, validSpace, placeMarker, clear, printBoard};
 })();
 
-// Display logic
-
-
 // Game
 const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
+    let gameActive = false;
+
     // Make 2 players
     const players = [
         {name: p1Name, marker: 'X'},
@@ -46,11 +45,13 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
     // For now, set active player to p1
     let activePlayer = players[0];
 
-    // Switch turns
     const switchTurn = () => activePlayer = activePlayer === players[0] ? players[1] : players[0];
 
-    // Retrieve active player
     const getActivePlayer = () => activePlayer;
+
+    const getPlayers = () => players;
+
+    const startGame = () => gameActive = true;
 
     const printRound = () => {
         gameboard.printBoard();
@@ -117,6 +118,10 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
     }
 
     const playRound = (row, col) => {
+        if(!gameActive) {
+            return;
+        }
+
         console.log(`${getActivePlayer().name} chose square at [${row}, ${col}]`);
 
         if (!gameboard.validSpace(row, col)) {
@@ -125,6 +130,7 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
         }
 
         gameboard.placeMarker(row, col, getActivePlayer().marker);
+        display.placeMarker(row, col, getActivePlayer().marker);
 
         // Logic for detecting game win and declaring winner
         // + concluding and resetting game
@@ -133,6 +139,7 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
             console.log(`${getActivePlayer().name} wins!
                          Starting new game...`);
             gameboard.clear();
+            display.clearDisplay();
             return;
         }
 
@@ -142,6 +149,7 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
             console.log(`It's a tie!
                          Starting new game...`);
             gameboard.clear();
+            display.clearDisplay();
             return;
         }
 
@@ -149,6 +157,70 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
         printRound();
     }
 
-    return {getActivePlayer, playRound};
+    return {getActivePlayer, playRound, getPlayers, startGame};
 })();
 
+// Display Logic
+const display = (function() {
+    const showBoard = () => {
+        let boardSize = gameboard.getBoard().length;
+
+        let body = document.querySelector("body");
+        
+        let boardGrid = document.createElement("div");
+
+        boardGrid.classList.add("boardGrid");
+        boardGrid.style.setProperty("--rows", boardSize);
+        boardGrid.style.setProperty("--cols", boardSize);
+        
+        for(let row = 0; row < boardSize; row++) {
+            for(let col = 0; col < boardSize; col++) {
+                let square = document.createElement("div");
+                square.classList.add("square");
+                square.dataset.row = row;
+                square.dataset.col = col;
+                // NOTE: Test for marker styling in squares
+                // square.innerHTML = "X";
+
+                square.addEventListener('click', () => {
+                    gameController.playRound(row, col);
+                });
+
+                boardGrid.appendChild(square);
+            }
+        }
+
+        body.appendChild(boardGrid);
+    };
+
+    const placeMarker = (row, col, marker) => {
+        let squareToMark = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        squareToMark.innerHTML = marker;
+    };
+
+    const clearDisplay = () => {
+        let grid = document.querySelectorAll(".square");
+                
+        grid.forEach((square) => {square.innerHTML = ""});
+        
+    }
+
+    return {showBoard, placeMarker, clearDisplay};
+})();
+
+display.showBoard();
+
+let begin = document.querySelector("button");
+
+begin.addEventListener('click', function() {
+    let p1Name = document.getElementById("player1").value;
+    let p2Name = document.getElementById("player2").value;
+    
+    let players = gameController.getPlayers();
+
+    players[0].name = p1Name;
+    players[1].name = p2Name;
+
+    gameController.startGame();
+
+})
