@@ -1,5 +1,5 @@
 // Game Board (IIFE)
-function Gameboard() {
+const gameboard = (function() { 
     // Board parameters
     const rows = 3;
     const cols = 3;
@@ -30,13 +30,13 @@ function Gameboard() {
 
     // Export 
     return {getBoard, validSpace, placeMarker, clear, printBoard};
-}
+})();
+
+// Display logic
+
 
 // Game
-function GameController(p1Name = "Player One", p2Name = "Player Two") {
-    // Get the board
-    const board = Gameboard();
-
+const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
     // Make 2 players
     const players = [
         {name: p1Name, marker: 'X'},
@@ -53,14 +53,14 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
     const getActivePlayer = () => activePlayer;
 
     const printRound = () => {
-        board.printBoard();
+        gameboard.printBoard();
         console.log(`${getActivePlayer().name}'s turn.`);
     }; 
 
 
     const checkDirection = (flatBoard, index, offset) => {
         let playerMarker = flatBoard[index];
-        let cellsToCheck = board.getBoard().length;
+        let cellsToCheck = gameboard.getBoard().length;
         let cellsChecked = 1;
 
         if(playerMarker === "") {
@@ -80,12 +80,12 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
     };
 
     const checkWin = () => {
-        const flatBoard = board.getBoard().flat();
+        const flatBoard = gameboard.getBoard().flat();
 
         // Checking rows & columns
-        for(let i = 0; i < board.getBoard().length; i++) {
+        for(let i = 0; i < gameboard.getBoard().length; i++) {
             // Rows
-            if(checkDirection(flatBoard, i * board.getBoard().length, 1)) {
+            if(checkDirection(flatBoard, i * gameboard.getBoard().length, 1)) {
                 return true;
             }
             // Columns
@@ -99,7 +99,7 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
             return true;
         }
 
-        if(checkDirection(flatBoard, board.getBoard().length - 1, 2)) {
+        if(checkDirection(flatBoard, gameboard.getBoard().length - 1, 2)) {
             return true;
         }
 
@@ -108,7 +108,7 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
     };
 
     const availableSquares = () => {
-        let available = board.getBoard().flat().filter(square => square === "");
+        let available = gameboard.getBoard().flat().filter(square => square === "");
         if(available.length > 0) {
             return true;
         }
@@ -119,12 +119,12 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
     const playRound = (row, col) => {
         console.log(`${getActivePlayer().name} chose square at [${row}, ${col}]`);
 
-        if (!board.validSpace(row, col)) {
+        if (!gameboard.validSpace(row, col)) {
             console.log("Invalid space! Choose an empty square!")
             return;
         }
 
-        board.placeMarker(row, col, getActivePlayer().marker);
+        gameboard.placeMarker(row, col, getActivePlayer().marker);
 
         // Logic for detecting game win and declaring winner
         // + concluding and resetting game
@@ -132,7 +132,7 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
             // Declare winner and reset game
             console.log(`${getActivePlayer().name} wins!
                          Starting new game...`);
-            board.clear();
+            gameboard.clear();
             return;
         }
 
@@ -141,7 +141,7 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
             // Declare tie and reset game
             console.log(`It's a tie!
                          Starting new game...`);
-            board.clear();
+            gameboard.clear();
             return;
         }
 
@@ -149,6 +149,6 @@ function GameController(p1Name = "Player One", p2Name = "Player Two") {
         printRound();
     }
 
-    return {getActivePlayer, playRound, board};
-}
+    return {getActivePlayer, playRound};
+})();
 
