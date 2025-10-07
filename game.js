@@ -33,13 +33,15 @@ const gameboard = (function() {
 })();
 
 // Game
-const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
-    let gameActive = false;
-
+const gameController = (function() {
+    let gameStatus = false;
+    let p1Default = 'Player One';
+    let p2Default = 'Player Two';
+    
     // Make 2 players
     const players = [
-        {name: p1Name, marker: 'X'},
-        {name: p2Name, marker: 'O'}
+        {name: p1Default, marker: 'X'},
+        {name: p2Default, marker: 'O'}
     ];
 
     // For now, set active player to p1
@@ -51,7 +53,42 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
 
     const getPlayers = () => players;
 
-    const startGame = () => gameActive = true;
+    const setPlayerNames = (p1, p2) => {
+        if(p1 === '' && p2 === '') {
+            players[0].name = p1Default;
+            players[1].name = p2Default;
+        } else if(p1 !== '' && p2 === '') {
+            players[0].name = p1;
+            players[1].name = p2Default;
+        } else if(p1 === '' && p2 !== '') {
+            players[0].name = p1Default;
+            players[1].name = p2;
+        } else if(p1 !== '' && p2 !== '') {
+            players[0].name = p1;
+            players[1].name = p2;
+        }
+    }; 
+
+    const gameActive = () => gameStatus;
+
+    const startGame = () => gameStatus = true;
+
+    const reset = () => {
+        const result = document.querySelector('#result');
+        const player1 = document.querySelector('#player1');
+        const player2 = document.querySelector('#player2');
+
+        result.style.visibility = 'hidden';
+        player1.value = ''; 
+        player2.value = '';
+
+        players[0].name = 'Player One';
+        players[1].name = 'Player Two';
+
+        activePlayer = players[0];
+        gameboard.clear();
+        display.clearDisplay();
+    };
 
     const printRound = () => {
         gameboard.printBoard();
@@ -118,7 +155,7 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
     }
 
     const playRound = (row, col) => {
-        if(!gameActive) {
+        if(!gameActive()) {
             return;
         }
 
@@ -136,20 +173,20 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
         // + concluding and resetting game
         if(checkWin()) {
             // Declare winner and reset game
-            console.log(`${getActivePlayer().name} wins!
-                         Starting new game...`);
-            gameboard.clear();
-            display.clearDisplay();
+            result.innerHTML = `${getActivePlayer().name} wins!`
+            result.style.visibility = 'visible';
+
+            gameStatus = false;
             return;
         }
 
         // Checked for winner and board is full; thus tie
         if(!availableSquares()) {
             // Declare tie and reset game
-            console.log(`It's a tie!
-                         Starting new game...`);
-            gameboard.clear();
-            display.clearDisplay();
+            result.innerHTML = `Tie game!`
+            result.style.visibility = 'visible';
+
+            gameStatus = false;
             return;
         }
 
@@ -157,7 +194,7 @@ const gameController = (function(p1Name = "Player One", p2Name = "Player Two") {
         printRound();
     }
 
-    return {getActivePlayer, playRound, getPlayers, startGame};
+    return {getActivePlayer, playRound, getPlayers, startGame, reset, gameActive, setPlayerNames};
 })();
 
 // Display Logic
@@ -210,17 +247,30 @@ const display = (function() {
 
 display.showBoard();
 
-let begin = document.querySelector("button");
+const begin = document.querySelector("#begin");
+const reset = document.querySelector("#reset");
+const result = document.querySelector("#result");
 
 begin.addEventListener('click', function() {
+    
     let p1Name = document.getElementById("player1").value;
     let p2Name = document.getElementById("player2").value;
-    
-    let players = gameController.getPlayers();
-
-    players[0].name = p1Name;
-    players[1].name = p2Name;
+    gameController.setPlayerNames(p1Name, p2Name);
 
     gameController.startGame();
+    alert(`Game active!`);
+});
 
-})
+reset.addEventListener('click', function() {
+    let p1Name = document.getElementById("player1").value;
+    let p2Name = document.getElementById("player2").value;
+
+    let players = gameController.getPlayers();
+
+    players[0].name = "Player One";
+    players[1].name = "Player Two";
+
+    gameController.reset();
+    alert('New Game! Enter player names.');
+});
+
