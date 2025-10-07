@@ -11,6 +11,11 @@ body {
     margin-bottom: 1rem;
 }
 
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
 
 button {
     justify-self: center;
@@ -18,16 +23,26 @@ button {
     border-radius: 5px;
 }
 
+.result {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: center;
+    border: 1px solid black;
+    height: 2.5rem;
+    width: 10rem;
+
+    visibility: hidden;
+}
+
 .boardGrid {
     border: 1px solid black;
-    height: 80vh; 
-    width: 80vw;
+    height: 60vh; 
+    width: 60vw;
 
     display: grid;
     grid-template-rows: repeat(var(--rows), 1fr);
     grid-template-columns: repeat(var(--cols), 1fr);
-
-    /* pointer-events: none; */
 }
 
 .square {
