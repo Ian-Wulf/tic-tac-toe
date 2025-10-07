@@ -55,9 +55,7 @@ input {
 
 .buttons {
     display: flex;
-    justify-content: space-between;
-
-    
+    justify-content: space-between;    
 }
 
 
@@ -75,6 +73,11 @@ button {
 button:hover {
     border-color: white;
 }
+
+/* TO DO: Figure out how you want button to change on click */
+/* button:active {
+ 
+} */
 
 .result {
     display: flex;
