@@ -72,12 +72,14 @@ button {
 
 button:hover {
     border-color: white;
+    color: yellow;
 }
 
-/* TO DO: Figure out how you want button to change on click */
-/* button:active {
- 
-} */
+button:active {
+    transform: translate(0%, 10%);
+    color: rgb(228, 139, 250);
+    border-color: rgb(101, 70, 241);
+}
 
 .result {
     display: flex;
