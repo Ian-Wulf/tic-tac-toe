@@ -100,7 +100,12 @@ button:active {
 .boardGrid {
     height: 60vh; 
     width: 60vw;
-    color: rgb(212, 90, 236);
+    /* color: rgb(212, 90, 236); */
+    color: white;
+    text-shadow: 3px 3px 2px rgb(212, 90, 236),
+                 -3px 3px 2px rgb(212, 90, 236),
+                 3px -3px 2px rgb(212, 90, 236),
+                 -3px -3px 2px rgb(212, 90, 236);
     border: 3px solid rgb(101, 70, 241);
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 5px;
